@@ -1,0 +1,6 @@
+dependencies {
+    compile project(':robo-parts-core')
+    compile 'org.hibernate:hibernate-core:5.2.14.Final'
+    runtime group: 'com.h2database', name: 'h2', version: '1.4.196'
+    testCompile group: 'org.hsqldb', name: 'hsqldb', version: '2.4.0'
+}

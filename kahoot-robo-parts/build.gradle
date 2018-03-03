@@ -1,0 +1,16 @@
+subprojects {
+    apply plugin: 'java'
+
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+
+    dependencies {
+        compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+        compileOnly 'org.projectlombok:lombok:1.16.20'
+        testCompile 'junit:junit:4.12'
+        testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
+        testCompile 'org.assertj:assertj-core:3.9.0'
+    }
+}

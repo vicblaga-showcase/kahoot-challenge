@@ -1,0 +1,316 @@
+swagger: "2.0"
+info:
+  description: "This is a simple robo parts API."
+  version: "1.0.0"
+  title: "Kahoot Robo Parts"
+  contact:
+    email: "vic.blaga@gmail.com"
+host: "localhost:4567"
+tags:
+- name: "parts"
+  description: "Everything about your parts"
+schemes:
+- "http"
+definitions:
+  Part:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int32"
+      name:
+        type: "string"
+  PartWithCompatible:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int32"
+      name:
+        type: "string"
+      compatible_parts:
+        type: array
+        items:
+          $ref: "#/definitions/Part"
+  AddPartRequest:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+  UpdatePartRequest:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int32"
+      name:
+        type: "string"
+  ErrorResponse:
+    type: "object"
+    properties:
+      status:
+        type: "string"
+        enum: [ERROR]
+      message:
+        type: string
+  PartResponse:
+    type: "object"
+    properties:
+      status:
+        type: "string"
+        enum: [SUCCESS, ERROR]
+      data:
+        $ref: "#/definitions/Part"
+  DeletePartResponse:
+    type: "object"
+    properties:
+      status:
+        type: "string"
+        enum: [SUCCESS, ERROR]
+      data:
+        type: "integer"
+        format: "int32"
+  PartResponseWithCompatible:
+    type: "object"
+    properties:
+      status:
+        type: "string"
+        enum: ["SUCCESS"]
+      data:
+        $ref: "#/definitions/PartWithCompatible"
+  PartsResponse:
+    type: "object"
+    properties:
+      status:
+        type: "string"
+        enum: ["SUCCESS", "ERROR"]
+      data:
+        type: array
+        items:
+          $ref: "#/definitions/Part"
+paths:
+  "/parts/{part_id}":
+    parameters:
+    - in: "path"
+      name: part_id
+      type: integer
+      required: true
+      description: Numeric ID of the part to get
+    get:
+      tags:
+      - "parts"
+      summary: "Get a part"
+      operationId: "getPart"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Success returns part object"
+          schema:
+            $ref: "#/definitions/PartResponse"
+        400:
+          description: "Error returns message"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      tags:
+      - "parts"
+      summary: "Delete a part"
+      operationId: "deletePart"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Success returns part id"
+          schema:
+            $ref: "#/definitions/DeletePartResponse"
+        400:
+          description: "Error returns message"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  "/parts/{part_id}/compatible":
+    get: 
+      tags:
+      - "parts"
+      summary: "Get all compatible parts"
+      operationId: "getCompatiblePart"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "part_id"
+        required: true
+        type: integer
+        description: Part ID to show compatible parts for
+      responses:
+        200:
+          description: "Success returns part object with compatible parts"
+          schema:
+            $ref: "#/definitions/PartResponseWithCompatible"
+        400:
+          description: "Error returns message"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /parts:
+    get:
+      tags:
+      - "parts"
+      summary: "Get all parts"
+      operationId: "getAll"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/PartsResponse"
+    post:
+      tags:
+      - "parts"
+      summary: "Add new part"
+      operationId: "addPart"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Part object to be added"
+        required: true
+        schema:
+          $ref: "#/definitions/AddPartRequest"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/PartResponse"
+    put:
+      tags:
+      - "parts"
+      summary: "Update part"
+      operationId: "updatePart"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Part object to be updated"
+        required: true
+        schema:
+          $ref: "#/definitions/UpdatePartRequest"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/PartResponse"
+  "/parts/{part_id}/compatibility/{other_id}/add":
+    parameters: 
+    - in: path
+      name: part_id
+      type: integer
+      required: true
+      description: Part id to add compatibility for.
+    - in: path
+      name: other_id
+      description: Part id to add compatibility with
+      required: true
+      type: integer
+    post:
+      tags:
+      - "parts"
+      summary: "Add compatibility between parts"
+      operationId: "addCompatibility"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "string"
+                enum: ["SUCCESS"]
+              data:
+                type: "string"
+                enum: ["OK"]
+        400:
+          description: "Success"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "string"
+                enum: ["ERROR"]
+              message:
+                type: "string"
+                enum: ["error message here"]
+  "/parts/{part_id}/compatibility/{other_id}/remove":
+    parameters: 
+    - in: path
+      name: part_id
+      type: integer
+      required: true
+      description: Part id to remove compatibility for.
+    - in: path
+      name: other_id
+      description: Part id to remove compatibility with
+      required: true
+      type: integer
+    post:
+      tags:
+      - "parts"
+      summary: "Remove compatibility between parts"
+      operationId: "removeCompatibility"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "string"
+                enum: ["SUCCESS"]
+              data:
+                type: "string"
+                enum: ["OK"]
+        400:
+          description: "Success"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "string"
+                enum: ["ERROR"]
+              message:
+                type: "string"
+                enum: ["error message here"]
+securityDefinitions:
+  petstore_auth:
+    type: "oauth2"
+    authorizationUrl: "http://petstore.swagger.io/oauth/dialog"
+    flow: "implicit"
+    scopes:
+      write:pets: "modify pets in your account"
+      read:pets: "read your pets"
+  api_key:
+    type: "apiKey"
+    name: "api_key"
+    in: "header"

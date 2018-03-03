@@ -1,0 +1,5 @@
+include 'robo-parts-rest'
+include 'robo-parts-core'
+include 'robo-parts-persistence'
+
+rootProject.name = 'kahoot-robo-parts'
